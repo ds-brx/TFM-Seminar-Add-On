@@ -52,13 +52,14 @@ python -m ablations   --dataset chess   --mode pelt   --penalty 3   --model rbf 
 
 | Argument         | Description                                                                 |
 |------------------|-----------------------------------------------------------------------------|
-| `--dataset`      | Dataset name. Options: `chess`, `parking`, `ames`                          |
-| `--mode`         | Change point detection method. Options: `pelt`, `binseg`, `og`             |
-| `--penalty`      | Penalty parameter (int) for controlling sensitivity of change detection    |
+| `--dataset`      | Dataset name. Options: `chess`, `parking`, `ames`                           |
+| `--mode`         | Change point detection method. Options: `pelt`, `binseg`, `og`              |
+| `--penalty`      | Penalty parameter (int) for controlling sensitivity of change detection     |
 | `--model`        | Cost model for ruptures. Options: `rbf`, `linear`                          |
-| `--shift_col`    | Feature(s) for shift detection: `all_numeric`, `default`, or column name   |
-| `--use_pca`      | Whether to apply PCA on selected features. Options: `True`, `False`        |
-| `--n_components` | If using PCA, number of components (float: `0.0`–`1.0` fraction of variance) |
+| `--shift_col`    | Feature(s) for shift detection: `all_numeric`, `default`, or column name    |
+| `--use_pca`      | Whether to apply PCA on selected features. Options: `True`, `False`         |
+| `--n_components` | If using PCA, number of components to keep specified as a fraction of the total numeric columns (float between 0.0 and 1.0) |
+
 
 ---
 
