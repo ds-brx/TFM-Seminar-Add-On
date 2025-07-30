@@ -1,6 +1,6 @@
 
 # Add-On for Seminar: Tabular Foundation Models  
-**Paper Reference**: *Drift-Resilient TabPFN*
+**Paper Reference**: [Drift-Resilient TabPFN](https://github.com/automl/Drift-Resilient_TabPFN)
 
 ## Motivation
 
