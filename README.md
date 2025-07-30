@@ -36,7 +36,7 @@ We use the [`ruptures`](https://github.com/deepcharles/ruptures) library to dete
 
 - Use all numeric features (`all_numeric`)
 - Use the default shift column from the paper (`default`)
-- Specify a particular column name
+- Specify a particular column name [TODO]
 - Optionally reduce feature dimensionality using PCA (`use_pca=True`)
 
 ### Example:
