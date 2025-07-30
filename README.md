@@ -39,6 +39,8 @@ We use the [`ruptures`](https://github.com/deepcharles/ruptures) library to dete
 - Specify a particular column name [TODO]
 - Optionally reduce feature dimensionality using PCA (`use_pca=True`)
 
+Currently, we evaluate our method on real-world test datasets from the Drift-Resilient TabPFN paper. The dataset-specific domain indicator allocation functions, located in `new_datasets.py`, have been updated to use our dynamic domain allocation system in place of the original manual approach.
+
 ### Example:
 ```bash
 python -m ablations   --dataset chess   --mode pelt   --penalty 3   --model rbf   --shift_col all_numeric   --use_pca True   --n_components 0.75
