@@ -6,23 +6,13 @@ from tabpfn.datasets.dist_shift_datasets import (
     dataframe_to_distribution_shift_ds,
     TASK_TYPE_MULTICLASS
 )
-from dynamic_domains import get_dynamic_shifts, get_dynamic_shifts_multifeature
-# mode : og, pelt, binseg
-# penalty : float
-# model : rbf, linear
+from dynamic_domains import master_shift
 
 
 MODULE_DIR = "Drift-Resilient_TabPFN/tabpfn/datasets"
 
 
-def get_housing_ames_data(
-        mode = "og",
-        penalty = 0.5,
-        model = "rbf" ,
-        shift_col = "default",
-        use_pca = False,
-        n_components = 5 
-):
+def get_housing_ames_data(config):
     """
     @article{cock2011ames,
         author = {De Cock, Dean},
@@ -82,27 +72,13 @@ def get_housing_ames_data(
     # Create a new column 'domain', each unique group will have a unique identifier
     # Define bins as every 15 years
     bins_domain = np.arange(min_year, max_year + 15, 15)
-    if mode == "og":
+
+    if config['mode'] == "og":
         df["domain"] = pd.cut(df["YearBuilt"], bins=bins_domain, right=False).cat.codes
     else:
-        if shift_col == "default":
-            df = get_dynamic_shifts(
-                df, 
-                shift_col="YearBuilt", 
-                penalty=penalty, 
-                method=mode, 
-                model=model
-            )
-        elif shift_col == "all_numeric":
-            df = get_dynamic_shifts_multifeature(
-                data = df, 
-                features = df.select_dtypes(include=['number']).columns.tolist(), 
-                penalty = penalty, 
-                method=mode, 
-                model=model,
-                use_pca=use_pca,
-                n_components=n_components
-                )
+        config['data'] = df
+        df = master_shift(config=config)
+
 
     bins_target = [0, 125000, 300000, np.inf]
     labels = ["<= 125k", "125k-300k", "> 300k"]
@@ -122,14 +98,7 @@ def get_housing_ames_data(
         shuffled=False,
     )
 
-def get_chess_data(
-        mode = "og",
-        penalty = 0.5,
-        model = "rbf",
-        shift_col = "default",
-        use_pca = False,
-        n_components = 5
-):
+def get_chess_data(config):
     """
     @article{vzliobaite2011combining,
       title={Combining similarity in time and space for training set formation under concept drift},
@@ -155,29 +124,16 @@ def get_chess_data(
 
     # Group every 20 consecutive games as a single domain, this should better track the progress a player makes
     # as the time contains gaps, that are probably not relevant to a player's progress
-    if mode == "og":
+    if config['mode'] == "og":
         df["domain"] = df.index // 20
     else:
-        if shift_col == "default":
-            df['temp_col'] = df.index
-            df = get_dynamic_shifts(
-                df, 
-                shift_col='temp_col', 
-                penalty=penalty, 
-                method=mode, 
-                model=model
-            )
+        config['data'] = df
+        if config['shift_col'] == 'default':
+            df['temp_col'] = df.index.values
+            config['shift_col'] = 'temp_col'
+        df = master_shift(config=config)
+        if 'temp_col' in df.columns:
             df.drop(columns=['temp_col'], inplace=True)
-        elif shift_col == "all_numeric":
-            df = get_dynamic_shifts_multifeature(
-                data = df, 
-                features = df.select_dtypes(include=['number']).columns.tolist(), 
-                penalty = penalty, 
-                method=mode, 
-                model=model,
-                use_pca=use_pca,
-                n_components=n_components
-            )
     # Change the data type of some columns
     cat_columns = ["white/black", "type", "outcome"]
     df[cat_columns] = df[cat_columns].astype("category")
@@ -198,11 +154,7 @@ def get_chess_data(
 
 ## figure these out 
 
-def get_parking_birmingham_data(
-        mode = "og",
-        penalty = 0.5,
-        model = "rbf"
-):
+def get_parking_birmingham_data(config):
     """
     @misc{misc_parking_birmingham_482,
       author       = {Stolfi,Daniel},
@@ -229,32 +181,28 @@ def get_parking_birmingham_data(
     data["Percentage_Occupied"] = np.digitize(
         data["Percentage_Occupied"], bins=[25, 50, 75]
     ).astype(int)
-
-    if mode == "og":
-        # Create 'Day', 'Week', and 'Domain' columns
-        data["Hour"] = data["LastUpdated"].dt.hour
-        data["Day"] = data["LastUpdated"].dt.day
-        data["Month"] = data["LastUpdated"].dt.month
+    # Create 'Day', 'Week', and 'Domain' columns
+    data["Hour"] = data["LastUpdated"].dt.hour
+    data["Day"] = data["LastUpdated"].dt.day
+    data["Month"] = data["LastUpdated"].dt.month
+    data = data.sample(frac=0.2, random_state=42).reset_index(drop=True)
+    
+    if config['mode'] == "og":
         data["domain"] = (
             data["LastUpdated"].dt.isocalendar().week
             - min(data["LastUpdated"].dt.isocalendar().week)
         ).astype(int)
 
     else:
-        data["Month"] = data["LastUpdated"].dt.month
-        data = get_dynamic_shifts(
-            data, 
-            shift_col = "Month", 
-            penalty = penalty, 
-            method=mode, 
-            model= model
-        )
+        config['data'] = data
+        data = master_shift(config=config)
 
     # Filter the data to only include the car park with the largest capacity
     data = data[data["SystemCodeNumber"] == "Others-CCCPS133"]
 
     # Remove 'LastUpdated', 'SystemCodeNumber', 'Week' and 'Year' columns
     data.drop(["LastUpdated", "SystemCodeNumber", "Occupancy"], axis=1, inplace=True)
+    
 
     return dataframe_to_distribution_shift_ds(
         "Parking Birmingham",
@@ -267,7 +215,7 @@ def get_parking_birmingham_data(
     )
 
 
-def get_folktables_data(states):
+def get_folktables_data(states = ["MD"], config = {}):
     from folktables import (
         ACSDataSource,
         ACSIncome,
@@ -418,11 +366,20 @@ def get_folktables_data(states):
     dataset_list = []
 
     for task, task_name in tasks:
+
+        if config['mode'] == 'og':
+            df = all_data[task_name]
+            domain_name = "YEAR"
+        else:
+            config['data'] = all_data[task_name]
+            df = master_shift(config)
+            domain_name = "domain"
+
         dataset = dataframe_to_distribution_shift_ds(
             name=f"Folktables - {task_name} - {' | '.join(states)}",
-            df=all_data[task_name],
+            df=df,
             target="TARGET",
-            domain_name="YEAR",
+            domain_name=domain_name,
             task_type=TASK_TYPE_MULTICLASS,
             dataset_source="real-world",
             shuffled=False,

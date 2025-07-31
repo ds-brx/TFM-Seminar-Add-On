@@ -1,145 +1,32 @@
 [
     {
-        "roc_auc": 0.9250336845495443,
-        "accuracy": 0.8465753424657534,
-        "dataset": "ames",
-        "mode": "og",
-        "penalty": null,
-        "model": null,
-        "shift_col": "default",
-        "use_pca": false,
-        "n_components": null
-    },
-    {
-        "roc_auc": 0.928309925894467,
-        "accuracy": 0.8479452054794521,
-        "dataset": "ames",
-        "mode": "pelt",
+        "roc_auc": 0.9275766896801955,
+        "accuracy": 0.8698630136986302,
+        "mode": "binseg",
         "penalty": 3,
         "model": "rbf",
-        "shift_col": "default",
-        "use_pca": false,
-        "n_components": null
-    },
-    {
-        "roc_auc": 0.9289857332428285,
-        "accuracy": 0.8575342465753425,
-        "dataset": "ames",
-        "mode": "pelt",
-        "penalty": 3,
-        "model": "rbf",
-        "shift_col": "all_numeric",
-        "use_pca": false,
-        "n_components": null
-    },
-    {
-        "roc_auc": 0.9289857332428285,
-        "accuracy": 0.8575342465753425,
-        "dataset": "ames",
-        "mode": "pelt",
-        "penalty": 3,
-        "model": "rbf",
-        "shift_col": "all_numeric",
-        "use_pca": true,
-        "n_components": 10
-    },
-    {
-        "roc_auc": 0.9275766896801955,
-        "accuracy": 0.8698630136986302,
-        "dataset": "ames",
-        "mode": "pelt",
-        "penalty": 5,
-        "model": "rbf",
-        "shift_col": "all_numeric",
-        "use_pca": true,
-        "n_components": 10
-    },
-    {
-        "roc_auc": 0.9275766896801955,
-        "accuracy": 0.8698630136986302,
-        "dataset": "ames",
-        "mode": "pelt",
-        "penalty": 5,
-        "model": "rbf",
-        "shift_col": "all_numeric",
-        "use_pca": true,
-        "n_components": 5
-    },
-    {
-        "roc_auc": 0.9275766896801955,
-        "accuracy": 0.8698630136986302,
-        "dataset": "ames",
-        "mode": "pelt",
-        "penalty": 7,
-        "model": "rbf",
-        "shift_col": "all_numeric",
-        "use_pca": true,
-        "n_components": 5
-    },
-    {
-        "roc_auc": 0.9275766896801955,
-        "accuracy": 0.8698630136986302,
-        "dataset": "ames",
-        "mode": "pelt",
-        "penalty": 7,
-        "model": "rbf",
-        "shift_col": "all_numeric",
-        "use_pca": true,
-        "n_components": 0.75
-    },
-    {
-        "roc_auc": 0.9275766896801955,
-        "accuracy": 0.8698630136986302,
-        "dataset": "ames",
-        "mode": "pelt",
-        "penalty": 5,
-        "model": "rbf",
-        "shift_col": "all_numeric",
-        "use_pca": true,
-        "n_components": 0.75
-    },
-    {
-        "roc_auc": 0.9275766896801955,
-        "accuracy": 0.8698630136986302,
-        "dataset": "ames",
-        "mode": "pelt",
-        "penalty": 5,
-        "model": "rbf",
-        "shift_col": "all_numeric",
+        "shift_col": "multifeature",
         "use_pca": true,
         "n_components": 0.5
     },
     {
         "roc_auc": 0.9275766896801955,
         "accuracy": 0.8698630136986302,
-        "dataset": "ames",
-        "mode": "pelt",
-        "penalty": 5,
+        "mode": "binseg",
+        "penalty": 3,
         "model": "rbf",
-        "shift_col": "all_numeric",
+        "shift_col": "multifeature",
         "use_pca": true,
-        "n_components": 0.25
+        "n_components": 0.5
     },
     {
         "roc_auc": 0.9275766896801955,
         "accuracy": 0.8698630136986302,
-        "dataset": "ames",
-        "mode": "pelt",
-        "penalty": 5,
-        "model": "rbf",
-        "shift_col": "all_numeric",
-        "use_pca": true,
-        "n_components": 0.1
-    },
-    {
-        "roc_auc": 0.9289857332428285,
-        "accuracy": 0.8575342465753425,
-        "dataset": "ames",
-        "mode": "pelt",
+        "mode": "binseg",
         "penalty": 3,
         "model": "rbf",
-        "shift_col": "all_numeric",
+        "shift_col": "multifeature",
         "use_pca": true,
-        "n_components": 0.1
+        "n_components": 0.5
     }
 ]

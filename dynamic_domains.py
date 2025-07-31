@@ -2,14 +2,42 @@ import ruptures as rpt
 import numpy as np
 from sklearn.decomposition import PCA
 
-def get_dynamic_shifts(data, shift_col, penalty, method='pelt', model='rbf'):
+
+def master_shift(config):
+    if str(config['shift_col']) == 'multifeature':
+        # Handle multifeature shift detection (all numeric columns)
+        return get_dynamic_shifts_multifeature(
+            data = config['data'],
+            penalty = config['penalty'],
+            mode = config['mode'],
+            model = config['model'],
+            use_pca = config.get('use_pca', False),
+            n_components = config.get('n_components', 1)
+        )
+    else:
+        if config['mode'] == 'og':
+            config['penalty'] = None
+            config['model'] = None
+            config['use_pca'] = False
+            config['n_components'] = None
+    
+        return get_dynamic_shifts(
+            data = config['data'],
+            shift_col = config['shift_col'],
+            penalty = config['penalty'],
+            mode = config['mode'],
+            model = config['model']
+        )
+
+
+def get_dynamic_shifts(data, shift_col, penalty, mode='pelt', model='rbf'):
 
     data.sort_values(shift_col, inplace=True)
     vals = data[shift_col].values
-    if method == 'pelt':
+    if mode == 'pelt':
         algo = rpt.Pelt(model=model).fit(vals)
         change_points = algo.predict(pen=penalty)
-    elif method == 'binseg':
+    elif mode == 'binseg':
         algo = rpt.Binseg(model=model).fit(vals)
         change_points = model.predict(n_bkps=penalty)
     else:
@@ -26,7 +54,7 @@ def get_dynamic_shifts(data, shift_col, penalty, method='pelt', model='rbf'):
     data['domain'] = labels
     return data
 
-def get_dynamic_shifts_multifeature(data, features, penalty, method='pelt', model='rbf', use_pca=False, n_components=1):
+def get_dynamic_shifts_multifeature(data, penalty, mode='pelt', model='rbf', use_pca=False, n_components=1):
     """
     Detect dynamic shifts in multivariate data using change point detection.
     
@@ -42,9 +70,13 @@ def get_dynamic_shifts_multifeature(data, features, penalty, method='pelt', mode
     Returns:
     - data: DataFrame with an additional 'domain' column indicating segments
     """
-    
-    vals = data[features].values  # (n_samples, n_features)
-    
+    # get vals of all numeric columns
+    numeric_cols = data.select_dtypes(include=[np.number]).columns.tolist()
+    if not numeric_cols:
+        raise ValueError("No numeric columns found in the data for multifeature shift detection.")  
+    vals = data[numeric_cols].values
+    print("Dataset Shape:", vals.shape)
+    print(data.head())
     # Optional PCA
     if use_pca:
         print(f"Applying PCA with {n_components} components...")
@@ -52,10 +84,10 @@ def get_dynamic_shifts_multifeature(data, features, penalty, method='pelt', mode
         vals = pca.fit_transform(vals)
     
     # Change point detection
-    if method == 'pelt':
+    if mode == 'pelt':
         algo = rpt.Pelt(model=model).fit(vals)
         change_points = algo.predict(pen=penalty)
-    elif method == 'binseg':
+    elif mode == 'binseg':
         algo = rpt.Binseg(model=model).fit(vals)
         change_points = algo.predict(n_bkps=penalty)
     else:

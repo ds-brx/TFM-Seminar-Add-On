@@ -20,5 +20,15 @@
         "shift_col": "default",
         "use_pca": false,
         "n_components": null
+    },
+    {
+        "roc_auc": 0.741982993565272,
+        "accuracy": 0.7378277153558053,
+        "mode": "binseg",
+        "penalty": 3,
+        "model": "rbf",
+        "shift_col": "multifeature",
+        "use_pca": true,
+        "n_components": 0.5
     }
 ]

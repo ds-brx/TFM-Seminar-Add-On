@@ -1,19 +1,12 @@
 import numpy as np
 from sklearn.metrics import roc_auc_score, accuracy_score
 from sklearn.model_selection import train_test_split
-from new_datasets import (get_chess_data,
-    get_parking_birmingham_data,
-    get_housing_ames_data)
+from config import DATASET_DICT, HP_GRID
 from setup import models
 import argparse
 import json
-
+import random
 import os
-DATASET_DICT = {
-    "chess" : get_chess_data,
-    "parking" : get_parking_birmingham_data,
-    "ames" : get_housing_ames_data,
-    }
 
 def evaluate_model(model, dataset):
   clf = models["tabpfn_dist_model_1"]
@@ -32,49 +25,56 @@ def evaluate_model(model, dataset):
   }
 
 
-
 def get_args():
     parser = argparse.ArgumentParser(description='Evaluate Drift-Resilient TabPFN model on a dataset.')
+    parser.add_argument('--automl', action='store_true', help='Run in AutoML mode with hyperparameter grid search.')
     parser.add_argument('--dataset', type=str, required=True, help='Path to the dataset file.')
-    parser.add_argument('--mode', type=str, choices=('og', 'pelt', 'binseg') , default='og', help='Drift detection mode: og, pelt, or binseg.')
+    parser.add_argument('--shift_col', type=str, default='default', choices=('default', 'multifeature'), help='Column name for shift detection in the dataset.')
     parser.add_argument('--penalty', type=int, default=None, help='Penalty for drift detection.')
+    parser.add_argument('--mode', type=str, choices=('og', 'pelt', 'binseg') , default='og', help='Drift detection mode: og, pelt, or binseg.')
     parser.add_argument('--model', type=str, choices=('rbf', 'linear'), default=None, help='Model type for drift detection: rbf or linear.')
-    parser.add_argument('--shift_col', type=str, default='default', choices=('default', 'all_numeric'), help='Column name for shift detection in the dataset.')
     parser.add_argument('--use_pca', type=bool, default=False, help='Whether to use PCA for dimensionality reduction before drift detection.')
     parser.add_argument('--n_components', type=float, default=None, help='Percent of PCA components to keep if use_pca is True.') 
     return parser.parse_args()
 
 def main():
     args = get_args()
-    dataset_name = args.dataset.lower()
-    if dataset_name not in DATASET_DICT:
-        raise ValueError(f"Dataset {dataset_name} is not supported. Choose from {list(DATASET_DICT.keys())}.")  
-    dataset = DATASET_DICT[dataset_name](
-        mode=args.mode, 
-        penalty=args.penalty, 
-        model=args.model,
-        shift_col=args.shift_col,
-        use_pca=args.use_pca,
-        n_components=args.n_components)
+    if args.automl:
+        # sample random hyperparameters from the grid for now
+        # TODO: implement a proper AutoML strategy
+        random.seed(42)  # For reproducibility
+        config = {key: random.choice(values) for key, values in HP_GRID.items()}
+    else:
+        config = {
+            "shift_col": args.shift_col,
+            "penalty": args.penalty,
+            "mode": args.mode, 
+            "model": args.model,
+            "use_pca": args.use_pca,
+            "n_components": args.n_components,  
+        }
+    # Log the configuration
+    print("Configuration:", config)
+
+    if config['shift_col'] == 'default':
+        config['shift_col'] = DATASET_DICT[args.dataset]["default_shift_col"]
+
+    if args.dataset not in DATASET_DICT:
+        raise ValueError(f"Dataset {args.dataset} is not supported. Choose from {list(DATASET_DICT.keys())}.")  
     
-    print(f"Evaluating model on {dataset_name} dataset with mode={args.mode}, penalty={args.penalty}, model={args.model}.")
+    dataset = DATASET_DICT[args.dataset]["data_func"](config = config)
+    
+    print(f"Evaluating model on {args.dataset} dataset...")
     results = evaluate_model(models["tabpfn_dist_model_1"], dataset)
-    results.update({
-        "dataset": dataset_name,
-        "mode": args.mode,
-        "penalty": args.penalty,
-        "model": args.model,
-        "shift_col": args.shift_col,
-        "use_pca": args.use_pca,
-        "n_components": args.n_components,
-    })
+    results.update(config)
+    results.pop('data', None)  # Remove the data object from results to avoid serialization issues
 
     # Make Results directory if it doesn't exist
     results_dir = "results"
     if not os.path.exists(results_dir):
         os.makedirs(results_dir)  
     # Save results to a JSON file   
-    file_path = os.path.join(results_dir,f"results_{dataset_name}.json")
+    file_path = os.path.join(results_dir,f"results_{args.dataset}.json")
 
     # Load existing results if file exists
     if os.path.exists(file_path):
