@@ -1,0 +1,79 @@
+[
+    {
+        "roc_auc": 0.9252561784207354,
+        "accuracy": 0.8498293515358362,
+        "dataset": "free_light",
+        "mode": "og",
+        "penalty": 3,
+        "model": "rbf",
+        "shift_col": "default",
+        "use_pca": true,
+        "n_components": 0.5
+    },
+    {
+        "roc_auc": 0.9213381555153707,
+        "accuracy": 0.8839590443686007,
+        "dataset": "free_light",
+        "mode": "pelt",
+        "penalty": 3,
+        "model": "rbf",
+        "shift_col": "default",
+        "use_pca": true,
+        "n_components": 0.5
+    },
+    {
+        "roc_auc": 0.9213381555153707,
+        "accuracy": 0.8839590443686007,
+        "dataset": "free_light",
+        "mode": "binseg",
+        "penalty": 5,
+        "model": "rbf",
+        "shift_col": "default",
+        "use_pca": true,
+        "n_components": 0.5
+    },
+    {
+        "roc_auc": 0.9349701814490547,
+        "accuracy": 0.8907849829351536,
+        "dataset": "free_light",
+        "mode": "binseg",
+        "penalty": 5,
+        "model": "rbf",
+        "shift_col": "all_numeric",
+        "use_pca": true,
+        "n_components": 0.5
+    },
+    {
+        "roc_auc": 0.9342723004694834,
+        "accuracy": 0.89419795221843,
+        "dataset": "free_light",
+        "mode": "bottomup",
+        "penalty": 3,
+        "model": "rbf",
+        "shift_col": "all_numeric",
+        "use_pca": true,
+        "n_components": 0.5
+    },
+    {
+        "roc_auc": 0.9342723004694834,
+        "accuracy": 0.89419795221843,
+        "dataset": "free_light",
+        "mode": "bottomup",
+        "penalty": 5,
+        "model": "rbf",
+        "shift_col": "all_numeric",
+        "use_pca": true,
+        "n_components": 0.5
+    },
+    {
+        "roc_auc": 0.9229793173455144,
+        "accuracy": 0.8907849829351536,
+        "dataset": "free_light",
+        "mode": "window",
+        "penalty": 5,
+        "model": "rbf",
+        "shift_col": "all_numeric",
+        "use_pca": true,
+        "n_components": 0.5
+    }
+]

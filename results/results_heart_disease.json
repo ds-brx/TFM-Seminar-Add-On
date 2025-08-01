@@ -1,0 +1,68 @@
+[
+    {
+        "roc_auc": 0.8459388971684054,
+        "accuracy": 0.7785234899328859,
+        "dataset": "heart_disease",
+        "mode": "pelt",
+        "penalty": 3,
+        "model": "rbf",
+        "shift_col": "default",
+        "use_pca": true,
+        "n_components": 0.5
+    },
+    {
+        "roc_auc": 0.846311475409836,
+        "accuracy": 0.785234899328859,
+        "dataset": "heart_disease",
+        "mode": "bottomup",
+        "penalty": 3,
+        "model": "rbf",
+        "shift_col": "default",
+        "use_pca": true,
+        "n_components": 0.5
+    },
+    {
+        "roc_auc": 0.8438897168405365,
+        "accuracy": 0.785234899328859,
+        "dataset": "heart_disease",
+        "mode": "window",
+        "penalty": 3,
+        "model": "rbf",
+        "shift_col": "default",
+        "use_pca": true,
+        "n_components": 0.5
+    },
+    {
+        "roc_auc": 0.8410953800298062,
+        "accuracy": 0.785234899328859,
+        "dataset": "heart_disease",
+        "mode": "window",
+        "penalty": 5,
+        "model": "rbf",
+        "shift_col": "default",
+        "use_pca": true,
+        "n_components": 0.5
+    },
+    {
+        "roc_auc": 0.849812734082397,
+        "accuracy": 0.785234899328859,
+        "dataset": "heart_disease",
+        "mode": "window",
+        "penalty": 5,
+        "model": "rbf",
+        "shift_col": "all_numeric",
+        "use_pca": true,
+        "n_components": 0.5
+    },
+    {
+        "roc_auc": 0.8531835205992511,
+        "accuracy": 0.7986577181208053,
+        "dataset": "heart_disease",
+        "mode": "og",
+        "penalty": 3,
+        "model": "rbf",
+        "shift_col": "default",
+        "use_pca": true,
+        "n_components": 0.5
+    }
+]

@@ -1,0 +1,57 @@
+[
+    {
+        "roc_auc": 0.8047371866816311,
+        "accuracy": 0.6571428571428571,
+        "dataset": "electricity",
+        "mode": "og",
+        "penalty": 3,
+        "model": "rbf",
+        "shift_col": "default",
+        "use_pca": true,
+        "n_components": 0.5
+    },
+    {
+        "roc_auc": 0.7272104573591738,
+        "accuracy": 0.6657848324514991,
+        "dataset": "electricity",
+        "mode": "pelt",
+        "penalty": 3,
+        "model": "rbf",
+        "shift_col": "default",
+        "use_pca": true,
+        "n_components": 0.5
+    },
+    {
+        "roc_auc": 0.7247665056360708,
+        "accuracy": 0.62,
+        "dataset": "electricity",
+        "mode": "binseg",
+        "penalty": 3,
+        "model": "rbf",
+        "shift_col": "default",
+        "use_pca": true,
+        "n_components": 0.5
+    },
+    {
+        "roc_auc": 0.7221417069243157,
+        "accuracy": 0.624,
+        "dataset": "electricity",
+        "mode": "bottomup",
+        "penalty": 3,
+        "model": "rbf",
+        "shift_col": "default",
+        "use_pca": true,
+        "n_components": 0.5
+    },
+    {
+        "roc_auc": 0.730805152979066,
+        "accuracy": 0.636,
+        "dataset": "electricity",
+        "mode": "window",
+        "penalty": 3,
+        "model": "rbf",
+        "shift_col": "default",
+        "use_pca": true,
+        "n_components": 0.5
+    }
+]

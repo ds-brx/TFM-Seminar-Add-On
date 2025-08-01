@@ -1,0 +1,68 @@
+[
+    {
+        "roc_auc": 0.73244612222602,
+        "accuracy": 0.5745257452574526,
+        "dataset": "absenteeism",
+        "mode": "og",
+        "penalty": 3,
+        "model": "rbf",
+        "shift_col": "default",
+        "use_pca": true,
+        "n_components": 0.5
+    },
+    {
+        "roc_auc": 0.7613550833621255,
+        "accuracy": 0.5907859078590786,
+        "dataset": "absenteeism",
+        "mode": "pelt",
+        "penalty": 3,
+        "model": "rbf",
+        "shift_col": "default",
+        "use_pca": true,
+        "n_components": 0.5
+    },
+    {
+        "roc_auc": 0.7613550833621255,
+        "accuracy": 0.5907859078590786,
+        "dataset": "absenteeism",
+        "mode": "binseg",
+        "penalty": 5,
+        "model": "rbf",
+        "shift_col": "default",
+        "use_pca": true,
+        "n_components": 0.5
+    },
+    {
+        "roc_auc": 0.7613550833621255,
+        "accuracy": 0.5907859078590786,
+        "dataset": "absenteeism",
+        "mode": "bottomup",
+        "penalty": 5,
+        "model": "rbf",
+        "shift_col": "default",
+        "use_pca": true,
+        "n_components": 0.75
+    },
+    {
+        "roc_auc": 0.7616068866905135,
+        "accuracy": 0.5934959349593496,
+        "dataset": "absenteeism",
+        "mode": "window",
+        "penalty": 3,
+        "model": "rbf",
+        "shift_col": "default",
+        "use_pca": true,
+        "n_components": 0.75
+    },
+    {
+        "roc_auc": 0.7336254469855731,
+        "accuracy": 0.5799457994579946,
+        "dataset": "absenteeism",
+        "mode": "window",
+        "penalty": 3,
+        "model": "rbf",
+        "shift_col": "all_numeric",
+        "use_pca": true,
+        "n_components": 0.75
+    }
+]

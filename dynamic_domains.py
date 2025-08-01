@@ -11,9 +11,15 @@ def get_dynamic_shifts(data, shift_col, penalty, method='pelt', model='rbf'):
         change_points = algo.predict(pen=penalty)
     elif method == 'binseg':
         algo = rpt.Binseg(model=model).fit(vals)
-        change_points = model.predict(n_bkps=penalty)
+        change_points = algo.predict(pen=penalty)
+    elif method == 'bottomup':
+        algo = rpt.BottomUp(model=model).fit(vals)
+        change_points = algo.predict(pen=penalty)
+    elif method == 'window':
+        algo = rpt.Window(width=penalty, model=model).fit(vals)
+        change_points = algo.predict(pen=penalty)
     else:
-        raise ValueError("Method must be either 'pelt' or 'binseg'.")
+        raise ValueError("Method must be either 'pelt', 'binseg', 'bottomup' or 'window'.")
 
     print("Detected change points at indices:", change_points)
     labels = np.zeros_like(vals, dtype=int)
@@ -58,8 +64,14 @@ def get_dynamic_shifts_multifeature(data, features, penalty, method='pelt', mode
     elif method == 'binseg':
         algo = rpt.Binseg(model=model).fit(vals)
         change_points = algo.predict(n_bkps=penalty)
+    elif method == 'bottomup':
+        algo = rpt.BottomUp(model=model).fit(vals)
+        change_points = algo.predict(n_bkps=penalty)
+    elif method == 'window':
+        algo = rpt.Window(width=penalty, model=model).fit(vals)
+        change_points = algo.predict(n_bkps=penalty)
     else:
-        raise ValueError("Method must be either 'pelt' or 'binseg'.")
+        raise ValueError("Method must be either 'pelt', 'binseg', 'bottomup' or 'window'.")
     
     print("Detected change points at indices:", change_points)
     

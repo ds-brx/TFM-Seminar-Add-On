@@ -20,5 +20,27 @@
         "shift_col": "default",
         "use_pca": false,
         "n_components": null
+    },
+    {
+        "roc_auc": 0.7525418205797952,
+        "accuracy": 0.7340823970037453,
+        "dataset": "chess",
+        "mode": "pelt",
+        "penalty": 3,
+        "model": "rbf",
+        "shift_col": "all_numeric",
+        "use_pca": true,
+        "n_components": 0.75
+    },
+    {
+        "roc_auc": 0.7525418205797952,
+        "accuracy": 0.7340823970037453,
+        "dataset": "chess",
+        "mode": "pelt",
+        "penalty": 3,
+        "model": "rbf",
+        "shift_col": "all_numeric",
+        "use_pca": true,
+        "n_components": 0.75
     }
 ]

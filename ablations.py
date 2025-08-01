@@ -3,7 +3,11 @@ from sklearn.metrics import roc_auc_score, accuracy_score
 from sklearn.model_selection import train_test_split
 from new_datasets import (get_chess_data,
     get_parking_birmingham_data,
-    get_housing_ames_data)
+    get_housing_ames_data,
+    get_cleveland_heart_disease_data,
+    get_absenteeism_data,
+    get_electricity_data,
+    get_free_light_chain_mortality_data)
 from setup import models
 import argparse
 import json
@@ -13,6 +17,10 @@ DATASET_DICT = {
     "chess" : get_chess_data,
     "parking" : get_parking_birmingham_data,
     "ames" : get_housing_ames_data,
+    "heart_disease": get_cleveland_heart_disease_data,  # Assuming this is a placeholder for the actual function
+    "absenteeism" : get_absenteeism_data,
+    "electricity" : get_electricity_data,
+    "free_light" : get_free_light_chain_mortality_data,
     }
 
 def evaluate_model(model, dataset):
@@ -25,7 +33,11 @@ def evaluate_model(model, dataset):
 
   preds = clf.predict_proba(X_test, additional_x={"dist_shift_domain": dist_shift_domain_test})
 
+  print("--------------------------------------Predictions shape:", preds.shape)
+  
+
   y_eval = np.argmax(preds, axis=1)
+  print("--------------------------------------y_eval shape:", y_eval.shape)
   return {
       "roc_auc": roc_auc_score(y_test, preds, multi_class='ovo'),
       "accuracy": accuracy_score(y_test, y_eval)
@@ -36,7 +48,7 @@ def evaluate_model(model, dataset):
 def get_args():
     parser = argparse.ArgumentParser(description='Evaluate Drift-Resilient TabPFN model on a dataset.')
     parser.add_argument('--dataset', type=str, required=True, help='Path to the dataset file.')
-    parser.add_argument('--mode', type=str, choices=('og', 'pelt', 'binseg') , default='og', help='Drift detection mode: og, pelt, or binseg.')
+    parser.add_argument('--mode', type=str, choices=('og', 'pelt', 'binseg', 'bottomup', 'window') , default='og', help='Drift detection mode: og, pelt, or binseg.')
     parser.add_argument('--penalty', type=int, default=None, help='Penalty for drift detection.')
     parser.add_argument('--model', type=str, choices=('rbf', 'linear'), default=None, help='Model type for drift detection: rbf or linear.')
     parser.add_argument('--shift_col', type=str, default='default', choices=('default', 'all_numeric'), help='Column name for shift detection in the dataset.')

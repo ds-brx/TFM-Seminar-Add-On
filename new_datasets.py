@@ -431,7 +431,402 @@ def get_folktables_data(states):
 
     return dataset_list
 
+def get_cleveland_heart_disease_data(
+        mode = "og",
+        penalty = 0.5,
+        model = "rbf" ,
+        shift_col = "default",
+        use_pca = False,
+        n_components = 5
+):
+    """
+    @misc{misc_heart_disease_45,
+        author       = {Janosi,Andras, Steinbrunn,William, Pfisterer,Matthias, and Detrano,Robert},
+        title        = {{Heart Disease}},
+        year         = {1988},
+        howpublished = {UCI Machine Learning Repository},
+        note         = {{DOI}: https://doi.org/10.24432/C52P4X}
+    }
+
+    https://archive.ics.uci.edu/dataset/45/heart+disease
+    """
+    data = pd.read_csv(
+        os.path.join(MODULE_DIR, "data/cleveland_heart_disease.csv"), sep=",",
+        na_values="?", keep_default_na=False
+    )
+
+    # Drop the few nan rows
+    data.dropna(inplace=True)
+
+    # Cast all columns but oldpeak to be integer
+    cols = data.columns.drop("oldpeak")
+    data[cols] = data[cols].apply(pd.to_numeric, downcast="integer", errors="coerce")
+
+    # Set the type of some columns to be categorical
+    cat_columns = ["sex", "cp", "fbs", "restecg", "exang", "slope", "thal"]
+    data[cat_columns] = data[cat_columns].apply(lambda x: x.astype("category"))
+
+    data.sort_values("age", inplace=True)
+
+    data["domain"] = pd.cut(
+            data["age"],
+            bins=np.arange(
+                data["age"].min() - data["age"].min() % 4, data["age"].max() + 5, 4
+            ),
+            right=False,
+        ).cat.codes
+
+    # Build the domain, which is an age category of 5 year intervals
+    if mode == "og":
+        data["domain"] = pd.cut(
+            data["age"],
+            bins=np.arange(
+                data["age"].min() - data["age"].min() % 4, data["age"].max() + 5, 4
+            ),
+            right=False,
+        ).cat.codes
+    else:
+        if shift_col == "default":
+            data = get_dynamic_shifts(
+                data, 
+                shift_col="age", 
+                penalty=penalty, 
+                method=mode, 
+                model=model
+            )
+        elif shift_col == "all_numeric":
+            data = get_dynamic_shifts_multifeature(
+                data = data, 
+                features = data.select_dtypes(include=['number']).columns.tolist(), 
+                penalty = penalty, 
+                method=mode, 
+                model=model,
+                use_pca=use_pca,
+                n_components=n_components
+            )
+
+    # treat all deseases as one class
+    data["target"] = data["target"].apply(lambda x: 1 if x > 0 else 0)
+
+    return dataframe_to_distribution_shift_ds(
+        "Cleveland Heart Disease",
+        data,
+        "target",
+        "domain",
+        task_type=TASK_TYPE_MULTICLASS,
+        dataset_source="real-world",
+        shuffled=False,
+    )
+
+def get_absenteeism_data(
+        mode = "og",
+        penalty = 0.5,
+        model = "rbf" ,
+        shift_col = "default",
+        use_pca = False,
+        n_components = 5
+):
+    """
+
+    @misc{misc_absenteeism_at_work_445,
+      author       = {Martiniano,Andrea and Ferreira,Ricardo},
+      title        = {{Absenteeism at work}},
+      year         = {2018},
+      howpublished = {UCI Machine Learning Repository},
+      note         = {{DOI}: https://doi.org/10.24432/C5X882}
+    }
+
+    https://archive.ics.uci.edu/dataset/445/absenteeism+at+work
+
+    This dataset was licensed under the CC BY 4.0 license.
+    """
+    data = pd.read_csv(
+        os.path.join(MODULE_DIR, "data/absenteeism_at_work.csv"), sep=",",
+        na_values="?", keep_default_na=False
+    )
+    
+
+    # Add a column to track the change in 'Month of absence'
+    data["Season_Change"] = data["Seasons"].ne(data["Seasons"].shift()).astype(int)
+
+    # Identify when the year changes based on 'Month of absence'
+    data["Season_Domain"] = (data["Season_Change"] > 0).cumsum()
+
+    # Remove the temporary columns
+    data.drop(["Season_Change"], axis=1, inplace=True)
+
+    data["Absenteeism time in hours"] = pd.qcut(
+        data["Absenteeism time in hours"], 4, labels=False
+        )
+
+    # Build the domain, which is an age category of 5 year intervals
+    if mode == "og":
+        data["Absenteeism time in hours"] = pd.qcut(
+        data["Absenteeism time in hours"], 4, labels=False
+        )
+    else:
+        if shift_col == "default":
+            data = get_dynamic_shifts(
+                data, 
+                shift_col="Seasons", 
+                penalty=penalty, 
+                method=mode, 
+                model=model
+            )
+        elif shift_col == "all_numeric":
+            data = get_dynamic_shifts_multifeature(
+                data = data, 
+                features = data.select_dtypes(include=['number']).columns.tolist(), 
+                penalty = penalty, 
+                method=mode, 
+                model=model,
+                use_pca=use_pca,
+                n_components=n_components
+            )
+
+    # Remove the last three rows, seem to not fit the data description (time jump)
+    data = data.iloc[:-3]
+
+    # Cast columns to be categorical
+    cat_columns = [
+        "ID",
+        "Reason for absence",
+        "Day of the week",
+        "Seasons",
+        "Disciplinary failure",
+        "Education",
+        "Social drinker",
+        "Social smoker",
+        "Month of absence",
+        "Season_Domain",
+    ]
+
+    data[cat_columns] = data[cat_columns].astype("category")
+
+    return dataframe_to_distribution_shift_ds(
+        "Absenteeism",
+        data,
+        "Absenteeism time in hours",
+        "Season_Domain",
+        task_type=TASK_TYPE_MULTICLASS,
+        dataset_source="real-world",
+        shuffled=False,
+    )
+
+def get_electricity_data(
+        mode = "og",
+        penalty = 0.5,
+        model = "rbf" ,
+        shift_col = "default",
+        use_pca = False,
+        n_components = 5    
+):
+    """..
+    @Book{ harries1999splice,
+        author = { Harries, Michael},
+        title = { Splice-2 comparative evaluation: Electricity Pricing},
+        publisher = { University of New South Wales, School of Computer Science and Engineering [Sydney] },
+        year = { 1999 },
+        type = { Book, Online },
+        url = { http://nla.gov.au/nla.arc-32869 },
+        language = { English },
+        subjects = { Machine learning },
+        life-dates = { 1999 -  },
+        catalogue-url = { https://nla.gov.au/nla.cat-vn3513275 },
+    }
+    """
+    df = pd.read_csv(
+        os.path.join(MODULE_DIR, "data/elec2.csv"), sep=",",
+        na_values="?", skipinitialspace=True, keep_default_na=False
+    )
+    
+    # Convert the 'date' column to string type
+    df["date"] = df["date"].astype(str)
+
+    # Extract the year, month, and day from the 'date' column
+    df["date"] = (
+        "19"
+        + df["date"].str[:2]
+        + "-"
+        + df["date"].str[2:4]
+        + "-"
+        + df["date"].str[4:6]
+    )
+
+    # Date ranged from 7 May 1996 to 5 December 1998
+    # Create a new 'date' column using the extracted year, month, and day
+    df["date"] = pd.to_datetime(df["date"], format="%Y-%m-%d")
+
+    # Drop nan rows
+    df.dropna(inplace=True)
+
+    # Drop half of the rows to reduce the size of the dataset
+    df = df[df["half_hour_interval"] % 4 == 0]
+
+    # Create the domain column in which every two week period is considered a new domain
+    # Create a grouper object based on 'date' and group by it
+    grouper = pd.Grouper(key="date", freq="1W")
+
+    # Create a new column 'domain', each unique group will have a unique identifier
+    df["domain"] = df.groupby(grouper).ngroup()
+
+    # Drop the first and last group, since those can be incomplete weeks
+    df = df[df["domain"] != 0]
+    df = df[df["domain"] != df["domain"].max()]
+
+    # Change the data type of some columns
+    df = df.astype(
+        {
+            "day_of_week": "category",
+            "half_hour_interval": "int",
+            "nsw_demand": "float",
+            "v_demand": "float",
+            "transfer": "float",
+        }
+    )
+
+    # Drop the columns not intended for the model
+    df.drop(["date", "nsw_prize", "v_prize"], axis=1, inplace=True)
+
+    # Subsample a range of 15 domains to reduce the size of the dataset even further
+    np.random.seed(0)  # Fixing the seed for reproducibility
+
+    range = 15
+    max_start = df["domain"].max() - range
+    start = np.random.randint(1, max_start + 1)
+    end = start + range
+
+    df = df.sample(n=1000,replace=False).copy()
+
+    if mode == "og":
+        df = df[(df["domain"] >= start) & (df["domain"] < end)]
+    else:
+        if shift_col == "default":
+            df = get_dynamic_shifts(
+                df, 
+                shift_col="domain", 
+                penalty=penalty, 
+                method=mode, 
+                model=model
+            )
+        elif shift_col == "all_numeric":
+            df = get_dynamic_shifts_multifeature(
+                df = df, 
+                features = df.select_dtypes(include=['number']).columns.tolist(), 
+                penalty = penalty, 
+                method=mode, 
+                model=model,
+                use_pca=use_pca,
+                n_components=n_components
+            )
+
+    return dataframe_to_distribution_shift_ds(
+        name="Electricity",
+        df=df,
+        target="target",
+        domain_name="domain",
+        task_type=TASK_TYPE_MULTICLASS,
+        dataset_source="real-world",
+        shuffled=False,
+    )
+
+def get_free_light_chain_mortality_data(
+        mode = "og",
+        penalty = 0.5,
+        model = "rbf" ,
+        shift_col = "default",
+        use_pca = False,
+        n_components = 5        
+):
+    """
+    @article{dispenzieri2012nonclonal,
+        author = {Dispenzieri, Angela and Katzmann, Jerry and Kyle, Robert and Larson, Dirk and Therneau, Terry and Colby, Colin and Clark, Raynell and Mead, Graham and Kumar, Shaji and Melton, L and Rajkumar, S},
+        year = {2012},
+        month = {06},
+        pages = {517-23},
+        title = {Use of Nonclonal Serum Immunoglobulin Free Light Chains to Predict Overall Survival in the General Population},
+        volume = {87},
+        journal = {Mayo Clinic proceedings. Mayo Clinic},
+        doi = {10.1016/j.mayocp.2012.03.009}
+    }
+
+    https://www.kaggle.com/datasets/nalkrolu/assay-of-serum-free-light-chain
+    """
+    data = pd.read_csv(
+        os.path.join(MODULE_DIR, "data/free_light_chain_mortality"), sep=",", keep_default_na=False
+    )
+    
+
+    # Drop the chapter since it leaks information whether the patient died or not,
+    # which is the target variable
+    data.drop(["chapter"], axis=1, inplace=True)
+
+    # Drop the first column since it is just an index
+    data.drop(["Unnamed: 0"], axis=1, inplace=True)
+
+    # Convert categorical variables
+    cat_columns = ["death", "mgus", "flc.grp", "sex"]
+    data[cat_columns] = data[cat_columns].astype("category")
+
+    # Drop rows that are nan since we are subsampling the data anyway
+    data.dropna(axis=0, inplace=True)
+
+    subsampled_dfs = []
+    for dom in data["sample.yr"].unique():
+        domain_instances = data[data["sample.yr"] == dom].shape[0]
+
+        # Use stratified sampling to ensure that the distribution of the target is preserved
+        subsampled_df = (
+            data[data["sample.yr"] == dom]
+            .groupby("death", observed=False)
+            .apply(
+                lambda x: x.reset_index().sample(
+                    frac=min(1.0, 80 / domain_instances), random_state=42
+                )
+            )
+            .droplevel(0)
+        )
+
+        # Restore the order relative to each other
+        subsampled_df.sort_index(inplace=True)
+
+        subsampled_dfs.append(subsampled_df)
+
+    # concatenate all subsampled DataFrames
+    data = pd.concat(subsampled_dfs)
 
 
+    if mode == "og":
+        # Restore the order relative to each other
+        data.sort_values("sample.yr", inplace=True)
+    else:
+        if shift_col == "default":
+            data = get_dynamic_shifts(
+                data, 
+                shift_col="sample.yr", 
+                penalty=penalty, 
+                method=mode, 
+                model=model
+            )
+        elif shift_col == "all_numeric":
+            data = get_dynamic_shifts_multifeature(
+                data = data, 
+                features = data.select_dtypes(include=['number']).columns.tolist(), 
+                penalty = penalty, 
+                method=mode, 
+                model=model,
+                use_pca=use_pca,
+                n_components=n_components
+            )
+
+    return dataframe_to_distribution_shift_ds(
+        "Free Light Chain Mortality",
+        data,
+        "death",
+        "sample.yr",
+        task_type=TASK_TYPE_MULTICLASS,
+        dataset_source="real-world",
+        shuffled=False,
+    )
 
 
