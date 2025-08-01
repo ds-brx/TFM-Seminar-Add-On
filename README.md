@@ -32,18 +32,28 @@ pip install ruptures
 
 ## Running the Add-On
 
-We use the [`ruptures`](https://github.com/deepcharles/ruptures) library to detect change points in tabular data. You can either:
+We use the [`ruptures`](https://github.com/deepcharles/ruptures) library to detect change points in tabular data. You can run the change point detection in different modes:
 
-- Use all numeric features to monitor shifts (`all_numeric`)
-- Use the default shift column from the paper (`default`)
-- Specify a particular column name [TODO]
-- Optionally reduce feature dimensionality using PCA (`use_pca=True`)
+- Run original settings from paper: `--mode og`
+- Automl Mode: `--automl --a_configs 10`
+- Shift detection on:
+  - All numeric features: `all_numeric`
+  - A random numeric feature: `any_numeric`
+  -   A specific column name: <str>
+- Optional PCA for dimensionality reduction: `use_pca=True`
 
 Currently, we evaluate our method on real-world test datasets from the Drift-Resilient TabPFN paper. The dataset-specific domain indicator allocation functions, located in `new_datasets.py`, have been updated to use our dynamic domain allocation system in place of the original manual approach.
 
-### Example:
+### Example Commands:
 ```bash
-python -m ablations   --dataset chess   --mode pelt   --penalty 3   --model rbf   --shift_col all_numeric   --use_pca True   --n_components 0.75
+# Manual configuration with PCA and specific settings
+python -m ablations --dataset chess --mode pelt --penalty 3 --model rbf --shift_col all_numeric --use_pca True --n_components 0.75
+
+# Original settings
+python -m ablations --dataset ames --mode og
+
+# AutoML with 10 configurations
+python -m ablations --dataset parking --automl --max_configs 10
 ```
 
 ---
@@ -52,22 +62,13 @@ python -m ablations   --dataset chess   --mode pelt   --penalty 3   --model rbf 
 
 | Argument         | Description                                                                 |
 |------------------|-----------------------------------------------------------------------------|
-| `--dataset`      | Dataset name. Options: `chess`, `parking`, `ames`                           |
+| `--dataset`      | Dataset name. Options: `chess`, `parking`, `ames` , `folktables`            |
 | `--mode`         | Change point detection method. Options: `pelt`, `binseg`, `og`              |
 | `--penalty`      | Penalty parameter (int) for controlling sensitivity of change detection     |
-| `--model`        | Cost model for ruptures. Options: `rbf`, `linear`                          |
-| `--shift_col`    | Feature(s) for shift detection: `all_numeric`, `default`, or column name    |
+| `--model`        | Cost model for ruptures. Options: `rbf`, `linear`                           |
+| `--shift_col`    | Feature(s) for shift detection: `all_numeric`, `any_numeric`,`default`, or column name |
 | `--use_pca`      | Whether to apply PCA on selected features. Options: `True`, `False`         |
-| `--n_components` | If using PCA, number of components to keep specified as a fraction of the total numeric columns (float between 0.0 and 1.0) |
-
-
----
-
-## AutoML Setup (To Do)
-
-> Integration with AutoML frameworks (e.g., AutoSklearn, H2O.ai) is in progress. Stay tuned.
-
----
+| `--n_components` | PCA: Fraction of components to keep (between 0.0 and 1.0)                   |
 
 ## Contribution
 
