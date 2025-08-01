@@ -1,32 +1,32 @@
 [
     {
-        "roc_auc": 0.9275766896801955,
-        "accuracy": 0.8698630136986302,
-        "mode": "binseg",
-        "penalty": 3,
-        "model": "rbf",
+        "roc_auc": 0.9681956232399701,
+        "accuracy": 0.8986301369863013,
         "shift_col": "multifeature",
-        "use_pca": true,
-        "n_components": 0.5
+        "penalty": 7,
+        "mode": "pelt",
+        "model": "rbf",
+        "use_pca": false,
+        "n_components": 0.9
     },
     {
-        "roc_auc": 0.9275766896801955,
-        "accuracy": 0.8698630136986302,
-        "mode": "binseg",
-        "penalty": 3,
-        "model": "rbf",
-        "shift_col": "multifeature",
-        "use_pca": true,
-        "n_components": 0.5
+        "roc_auc": 0.9250336845495443,
+        "accuracy": 0.8465753424657534,
+        "shift_col": "default",
+        "penalty": null,
+        "mode": "og",
+        "model": null,
+        "use_pca": false,
+        "n_components": null
     },
     {
-        "roc_auc": 0.9275766896801955,
-        "accuracy": 0.8698630136986302,
+        "roc_auc": 0.9699086265881208,
+        "accuracy": 0.9123287671232877,
+        "shift_col": "any_numeric",
+        "penalty": 7,
         "mode": "binseg",
-        "penalty": 3,
         "model": "rbf",
-        "shift_col": "multifeature",
-        "use_pca": true,
-        "n_components": 0.5
+        "use_pca": false,
+        "n_components": 0.9
     }
 ]

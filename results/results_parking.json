@@ -1,7 +1,7 @@
 [
     {
-        "roc_auc": 0.7983939691904293,
-        "accuracy": 0.7640449438202247,
+        "roc_auc": 0.8380952380952381,
+        "accuracy": 0.6,
         "shift_col": "any_numeric",
         "penalty": 11,
         "mode": "binseg",
@@ -10,8 +10,8 @@
         "n_components": 0.7
     },
     {
-        "roc_auc": 0.7560682987898177,
-        "accuracy": 0.7378277153558053,
+        "roc_auc": 0.7954545454545454,
+        "accuracy": 0.55,
         "shift_col": "default",
         "penalty": null,
         "mode": "og",

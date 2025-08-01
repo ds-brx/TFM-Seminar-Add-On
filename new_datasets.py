@@ -128,12 +128,8 @@ def get_chess_data(config):
         df["domain"] = df.index // 20
     else:
         config['data'] = df
-        if config['shift_col'] == 'default':
-            df['temp_col'] = df.index.values
-            config['shift_col'] = 'temp_col'
         df = master_shift(config=config)
-        if 'temp_col' in df.columns:
-            df.drop(columns=['temp_col'], inplace=True)
+
     # Change the data type of some columns
     cat_columns = ["white/black", "type", "outcome"]
     df[cat_columns] = df[cat_columns].astype("category")
@@ -185,7 +181,8 @@ def get_parking_birmingham_data(config):
     data["Hour"] = data["LastUpdated"].dt.hour
     data["Day"] = data["LastUpdated"].dt.day
     data["Month"] = data["LastUpdated"].dt.month
-    data = data.sample(frac=0.2, random_state=42).reset_index(drop=True)
+    
+    data = data.sample(n=1000,replace=False, random_state=42).copy() #subsample the data to make it more manageable
     
     if config['mode'] == "og":
         data["domain"] = (
@@ -215,7 +212,7 @@ def get_parking_birmingham_data(config):
     )
 
 
-def get_folktables_data(states = ["MD"], config = {}):
+def get_folktables_data(config, states = ["MD"]):
     from folktables import (
         ACSDataSource,
         ACSIncome,
@@ -238,13 +235,13 @@ def get_folktables_data(states = ["MD"], config = {}):
         survey_year=2019,
         horizon="5-Year",
         survey="person",
-        root_dir="./datasets/data/folktables",
+        root_dir="/work/dlclarge2/dasb-Camvid/folk_datasets/data/folktables",
     ).get_data(states=states, download=True)
     acs_data_2017_2021 = ACSDataSource(
         survey_year=2021,
         horizon="5-Year",
         survey="person",
-        root_dir="./datasets/data/folktables",
+        root_dir="/work/dlclarge2/dasb-Camvid/folk_datasets/data/folktables",
     ).get_data(states=states, download=True)
 
     # Features that are in the 2015-2019 dataset but not in the 2017-2021 dataset

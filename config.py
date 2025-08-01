@@ -6,7 +6,7 @@ from new_datasets import (get_chess_data,
 DATASET_DICT = {
     "ames" : {
         "data_func": get_housing_ames_data,
-        "default_shift_col": "LastUpdated",
+        "default_shift_col": "YearBuilt",
     },
 
     "chess" : {
@@ -16,7 +16,7 @@ DATASET_DICT = {
 
     "parking" : {
         "data_func": get_parking_birmingham_data,
-        "default_shift_col": "YearBuilt",
+        "default_shift_col": "LastUpdated",
     },
 
     "folktables" : {
@@ -27,10 +27,10 @@ DATASET_DICT = {
 }
 
 HP_GRID = {
-    'mode': ['og', 'pelt', 'binseg'],
-    'penalty': [3, 5, 7, None],  
-    'model': ['rbf', 'linear', None],
-    'shift_col': ['default', 'multifeature'],
+    'mode': ['pelt', 'binseg'],
+    'penalty': [3, 5, 7, 9, 11, 13],  
+    'model': ['rbf'],
+    'shift_col': ['multifeature', 'any_numeric'],
     'use_pca': [True, False],
-    'n_components': [0.3, 0.5, 0.7, 0.9, None],  
+    'n_components': [0.3, 0.5, 0.7, 0.9],  
 }

@@ -1,0 +1,42 @@
+[
+    {
+        "roc_auc": 0.8815269024773369,
+        "accuracy": 0.7972350230414746,
+        "shift_col": "any_numeric",
+        "penalty": 11,
+        "mode": "binseg",
+        "model": "rbf",
+        "use_pca": true,
+        "n_components": 0.9
+    },
+    {
+        "roc_auc": 0.8372097420769986,
+        "accuracy": 0.7603686635944701,
+        "shift_col": "default",
+        "penalty": null,
+        "mode": "og",
+        "model": null,
+        "use_pca": false,
+        "n_components": null
+    },
+    {
+        "roc_auc": 0.7358314690529455,
+        "accuracy": 0.7465437788018433,
+        "shift_col": "default",
+        "penalty": null,
+        "mode": "og",
+        "model": null,
+        "use_pca": false,
+        "n_components": null
+    },
+    {
+        "roc_auc": 0.8816269099287967,
+        "accuracy": 0.8187403993855606,
+        "shift_col": "default",
+        "penalty": null,
+        "mode": "og",
+        "model": null,
+        "use_pca": false,
+        "n_components": null
+    }
+]
